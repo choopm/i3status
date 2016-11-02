@@ -324,6 +324,23 @@ int main(int argc, char *argv[]) {
         CFG_CUSTOM_SEP_BLOCK_WIDTH_OPT,
         CFG_END()};
 
+    cfg_opt_t external_opts[] = {
+        CFG_STR("command", NULL, CFGF_NONE),
+        CFG_STR("format", "%status", CFGF_NONE),
+        CFG_CUSTOM_ALIGN_OPT,
+        CFG_CUSTOM_COLOR_OPTS,
+        CFG_CUSTOM_MIN_WIDTH_OPT,
+        CFG_END()};
+
+    cfg_opt_t file_contents_opts[] = {
+        CFG_STR("filepath", NULL, CFGF_NONE),
+        CFG_BOOL("update_on_change", true, CFGF_NONE),
+        CFG_STR("format", "%status", CFGF_NONE),
+        CFG_CUSTOM_ALIGN_OPT,
+        CFG_CUSTOM_COLOR_OPTS,
+        CFG_CUSTOM_MIN_WIDTH_OPT,
+        CFG_END()};
+
     cfg_opt_t wireless_opts[] = {
         CFG_STR("format_up", "W: (%quality at %essid, %bitrate) %ip", CFGF_NONE),
         CFG_STR("format_down", "W: down", CFGF_NONE),
@@ -464,6 +481,8 @@ int main(int argc, char *argv[]) {
         CFG_SEC("general", general_opts, CFGF_NONE),
         CFG_SEC("run_watch", run_watch_opts, CFGF_TITLE | CFGF_MULTI),
         CFG_SEC("path_exists", path_exists_opts, CFGF_TITLE | CFGF_MULTI),
+        CFG_SEC("external", external_opts, CFGF_TITLE | CFGF_MULTI),
+        CFG_SEC("file_contents", file_contents_opts, CFGF_TITLE | CFGF_MULTI),
         CFG_SEC("wireless", wireless_opts, CFGF_TITLE | CFGF_MULTI),
         CFG_SEC("ethernet", ethernet_opts, CFGF_TITLE | CFGF_MULTI),
         CFG_SEC("battery", battery_opts, CFGF_TITLE | CFGF_MULTI),
@@ -678,6 +697,18 @@ int main(int argc, char *argv[]) {
             CASE_SEC_TITLE("path_exists") {
                 SEC_OPEN_MAP("path_exists");
                 print_path_exists(json_gen, buffer, title, cfg_getstr(sec, "path"), cfg_getstr(sec, "format"), cfg_getstr(sec, "format_down"));
+                SEC_CLOSE_MAP;
+            }
+
+            CASE_SEC_TITLE("external") {
+                SEC_OPEN_MAP("external");
+                print_external(json_gen, buffer, title, cfg_getstr(sec, "command"), cfg_getstr(sec, "format"));
+                SEC_CLOSE_MAP;
+            }
+
+            CASE_SEC_TITLE("file_contents") {
+                SEC_OPEN_MAP("file_contents");
+                print_file_contents(json_gen, buffer, title, cfg_getstr(sec, "filepath"), cfg_getbool(sec, "update_on_change"), cfg_getstr(sec, "format"));
                 SEC_CLOSE_MAP;
             }
 
